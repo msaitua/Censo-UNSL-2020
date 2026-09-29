@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNSL · Censo Estudiantil 2020 — Virtualidad y Pandemia</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+:root{
+  --navy:#0d2137;--blue:#1a5fa8;--teal:#0e9e8a;--amber:#e8a220;
+  --red:#d94f4f;--purple:#6b3fa0;--green:#2a9d4e;--pink:#e8509a;
+  --bg:#f4f6fa;--card:#fff;--text:#1a2535;--muted:#6b7a8d;--border:#e0e5ee;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
+
+header{background:var(--navy);color:white;position:relative;overflow:hidden;}
+.hbg{position:absolute;inset:0;background:linear-gradient(135deg,#0d2137 0%,#1b3d60 60%,#0e4a6e 100%);}
+.hbg::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(14,158,138,.12) 0%,transparent 65%);right:-100px;top:-200px;}
+.hbg::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(232,162,32,.08) 0%,transparent 70%);left:50px;bottom:-150px;}
+.hi{display:grid;grid-template-columns:1fr auto;align-items:end;padding:44px 56px 32px;gap:24px;position:relative;z-index:1;}
+.hlabel{font-family:'Syne',sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+h1{font-family:'Syne',sans-serif;font-size:clamp(24px,3.5vw,42px);font-weight:800;line-height:1.1;margin-bottom:12px;}
+h1 span{color:var(--teal);}
+.hsub{font-size:14px;font-weight:300;color:rgba(255,255,255,.6);max-width:540px;line-height:1.7;}
+.hmeta{text-align:right;}
+.mbadge{display:inline-block;background:rgba(14,158,138,.2);border:1px solid rgba(14,158,138,.4);color:#5ce0cc;padding:5px 13px;border-radius:20px;font-size:12px;margin-bottom:8px;}
+.minfo{font-size:12px;color:rgba(255,255,255,.38);line-height:2.}
+
+.sstrip{background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.06);padding:0 56px;display:flex;flex-wrap:wrap;position:relative;z-index:1;}
+.si{padding:14px 28px;text-align:center;border-right:1px solid rgba(255,255,255,.06);}
+.si:first-child{padding-left:0;}
+.sn{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:white;}
+.sl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.38);margin-top:2px;}
+
+.tabs{background:var(--navy);border-top:1px solid rgba(255,255,255,.08);padding:0 56px;display:flex;overflow-x:auto;}
+.tab{padding:12px 18px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:rgba(255,255,255,.42);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+.tab:hover{color:rgba(255,255,255,.75);}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+
+main{padding:32px 56px;max-width:1440px;margin:0 auto;}
+.sec{display:none;}.sec.active{display:block;}
+
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+.kc{background:var(--card);border-radius:14px;padding:18px 16px;border:1px solid var(--border);position:relative;overflow:hidden;}
+.kc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;}
+.kc.c1::after{background:var(--blue)}.kc.c2::after{background:var(--teal)}.kc.c3::after{background:var(--amber)}.kc.c4::after{background:var(--purple)}.kc.c5::after{background:var(--red)}.kc.c6::after{background:var(--green)}
+.kl{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.kv{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--navy);line-height:1;margin-bottom:4px;}
+.kd{font-size:12px;color:var(--muted);}
+
+.cg{display:grid;gap:18px;margin-bottom:18px;}
+.cg2{grid-template-columns:1fr 1fr;}
+.cg3{grid-template-columns:2fr 1fr;}
+.cg31{grid-template-columns:1fr 2fr;}
+.cg1{grid-template-columns:1fr;}
+.cc{background:var(--card);border-radius:14px;padding:22px;border:1px solid var(--border);}
+.ct{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.cs{font-size:11px;color:var(--muted);margin-bottom:14px;}
+.cw{position:relative;width:100%;}
+
+.insight{background:linear-gradient(135deg,#eef6ff,#f4f8ff);border:1px solid #c8dcf5;border-left:4px solid var(--blue);border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:13px;color:#1a3a5c;line-height:1.7;}
+.insight strong{color:#0d2137;}
+
+.pbar{display:flex;align-items:center;gap:10px;margin:6px 0;}
+.pbar-label{font-size:12px;min-width:180px;color:var(--text);}
+.pbar-track{flex:1;background:#f0f2f7;border-radius:6px;height:22px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:white;transition:width .5s;}
+.pbar-pct{font-size:12px;font-weight:600;color:var(--muted);min-width:45px;text-align:right;}
+
+.scale-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.scale-item{background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--border);}
+.scale-title{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:10px;}
+.scale-bars{display:flex;flex-direction:column;gap:4px;}
+.sbar{display:flex;align-items:center;gap:8px;}
+.sbar-l{font-size:11px;min-width:90px;color:var(--muted);}
+.sbar-t{flex:1;background:#f0f2f7;border-radius:4px;height:16px;overflow:hidden;}
+.sbar-f{height:100%;border-radius:4px;}
+.sbar-n{font-size:10px;color:var(--muted);min-width:36px;text-align:right;}
+
+footer{text-align:center;padding:24px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);margin-top:28px;}
+@media(max-width:900px){.hi{grid-template-columns:1fr;padding:24px 20px;}.tabs,.sstrip{padding:0 20px;}main{padding:20px;}.cg2,.cg3,.cg31{grid-template-columns:1fr;}.hmeta{text-align:left;}.scale-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="hbg"></div>
+<div class="hi">
+  <div>
+    <div class="hlabel">Censo Estudiantil UNSL · Octubre 2020</div>
+    <h1>Virtualidad y Pandemia<br><span>Resultados del Censo 2020</span></h1>
+    <p class="hsub">Universidad Nacional de San Luis — Análisis de 10.314 respuestas estudiantiles sobre infraestructura tecnológica, experiencia de cursada virtual, dificultades y perspectivas sobre el futuro de la educación.</p>
+  </div>
+  <div class="hmeta">
+    <div class="mbadge">Censo 19/10/2020</div>
+    <div class="minfo">
+      10.314 respuestas válidas<br>
+      Octubre 2020 · Cuarentena COVID-19<br>
+      Universidad Nacional de San Luis
+    </div>
+  </div>
+</div>
+<div class="sstrip">
+  <div class="si"><div class="sn">10.314</div><div class="sl">Respuestas</div></div>
+  <div class="si"><div class="sn">88%</div><div class="sl">Reside en SL</div></div>
+  <div class="si"><div class="sn">76.7%</div><div class="sl">Usa celular</div></div>
+  <div class="si"><div class="sn">67.8%</div><div class="sl">No trabaja</div></div>
+  <div class="si"><div class="sn">63.5%</div><div class="sl">Quiere bimodal</div></div>
+  <div class="si"><div class="sn">48.5%</div><div class="sl">Eval. Buena/Muy Buena</div></div>
+</div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('resumen')">Resumen</div>
+  <div class="tab" onclick="showTab('infraestructura')">Infraestructura</div>
+  <div class="tab" onclick="showTab('cursada')">Experiencia Virtual</div>
+  <div class="tab" onclick="showTab('dificultades')">Dificultades</div>
+  <div class="tab" onclick="showTab('futuro')">Futuro y Modalidad</div>
+  <div class="tab" onclick="showTab('institucional')">Gestión UNSL</div>
+</div>
+
+<main>
+
+<!-- RESUMEN -->
+<section id="resumen" class="sec active">
+  <div class="insight">
+    <strong>📋 Censo realizado en plena cuarentena (octubre 2020).</strong> El 88% de los encuestados reside en San Luis y el 78.5% en la misma ciudad donde cursaría presencialmente. El <strong>76.7% usa el celular</strong> como principal dispositivo de cursada. La evaluación general de la virtualidad fue <strong>Buena o Muy Buena para el 48.5%</strong>, mientras el 34.7% la valoró Regular. El <strong>63.5% prefiere una modalidad bimodal</strong> al finalizar el aislamiento.
+  </div>
+  <div class="kg">
+    <div class="kc c1"><div class="kl">Respuestas totales</div><div class="kv">10.314</div><div class="kd">Censo octubre 2020</div></div>
+    <div class="kc c2"><div class="kl">Residen en San Luis</div><div class="kv">88%</div><div class="kd">9.080 estudiantes</div></div>
+    <div class="kc c3"><div class="kl">No trabajan</div><div class="kv">67.8%</div><div class="kd">6.994 estudiantes</div></div>
+    <div class="kc c4"><div class="kl">Usan celular</div><div class="kv">76.7%</div><div class="kd">Principal dispositivo</div></div>
+    <div class="kc c5"><div class="kl">Conflictos PC</div><div class="kv">51.5%</div><div class="kd">Por computadoras compartidas</div></div>
+    <div class="kc c6"><div class="kl">Quieren bimodal</div><div class="kv">63.5%</div><div class="kd">Post pandemia</div></div>
+  </div>
+
+  <div class="cg cg3">
+    <div class="cc">
+      <div class="ct">Evaluación General de la Cursada Virtual</div>
+      <div class="cs">¿Cómo evaluarías la experiencia general de cursada virtual?</div>
+      <div class="cw" style="height:240px"><canvas id="cEvalGeneral"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Situación de Convivencia</div>
+      <div class="cs">¿Con quién compartís vivienda durante la cuarentena?</div>
+      <div class="cw" style="height:240px"><canvas id="cConvivencia"></canvas></div>
+    </div>
+  </div>
+
+  <div class="cg cg2">
+    <div class="cc">
+      <div class="ct">Dispositivos Usados para Cursada</div>
+      <div class="cs">% de estudiantes que utiliza cada dispositivo</div>
+      <div class="cw" style="height:200px"><canvas id="cDispositivos"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Situación Laboral</div>
+      <div class="cs">¿Actualmente trabajás?</div>
+      <div class="cw" style="height:200px"><canvas id="cTrabaja"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- INFRAESTRUCTURA -->
+<section id="infraestructura" class="sec">
+  <div class="insight">
+    <strong>💻 El celular es el dispositivo dominante (76.7%)</strong>, por encima del notebook (45.1%) y la netbook (28.6%). El <strong>69.2% tiene acceso a internet mediante proveedor pagado</strong>, pero el 31.2% se conecta vía WiFi del vecino y el 23.9% usa datos móviles. Solo el 1% no tiene ningún tipo de acceso. El <strong>51.5% reportó conflictos</strong> por compartir computadoras en el hogar.
+  </div>
+  <div class="cg cg2">
+    <div class="cc">
+      <div class="ct">Dispositivos para Cursada Virtual</div>
+      <div class="cs">Porcentaje de uso por tipo de dispositivo</div>
+      <div id="dispBars">
+        <div class="pbar"><span class="pbar-label">📱 Celular</span><div class="pbar-track"><div class="pbar-fill" style="width:76.7%;background:#1a5fa8">76.7%</div></div><span class="pbar-pct">7.912</span></div>
+        <div class="pbar"><span class="pbar-label">💻 Notebook</span><div class="pbar-track"><div class="pbar-fill" style="width:45.1%;background:#0e9e8a">45.1%</div></div><span class="pbar-pct">4.651</span></div>
+        <div class="pbar"><span class="pbar-label">🖥️ Netbook</span><div class="pbar-track"><div class="pbar-fill" style="width:28.6%;background:#e8a220">28.6%</div></div><span class="pbar-pct">2.951</span></div>
+        <div class="pbar"><span class="pbar-label">🖥 PC Escritorio</span><div class="pbar-track"><div class="pbar-fill" style="width:20.3%;background:#6b3fa0">20.3%</div></div><span class="pbar-pct">2.096</span></div>
+        <div class="pbar"><span class="pbar-label">📟 Tablet</span><div class="pbar-track"><div class="pbar-fill" style="width:2.7%;background:#d94f4f">2.7%</div></div><span class="pbar-pct">282</span></div>
+      </div>
+    </div>
+    <div class="cc">
+      <div class="ct">Tipo de Conexión a Internet</div>
+      <div class="cs">Fuente principal de conectividad en el hogar</div>
+      <div class="cw" style="height:220px"><canvas id="cInternet"></canvas></div>
+    </div>
+  </div>
+
+  <div class="cg cg2">
+    <div class="cc">
+      <div class="ct">Computadoras en el Hogar</div>
+      <div class="cs">Cantidad de PC/Notebooks disponibles en el hogar</div>
+      <div class="cw" style="height:200px"><canvas id="cCompus"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Conflictos por Computadoras Compartidas</div>
+      <div class="cs">¿Hubo conflictos durante la cuarentena por el uso de dispositivos?</div>
+      <div class="cw" style="height:200px"><canvas id="cConflictos"></canvas></div>
+    </div>
+  </div>
+
+  <div class="cg cg1">
+    <div class="cc">
+      <div class="ct">Personas en el Hogar que Requieren Internet Simultáneamente</div>
+      <div class="cs">Cantidad de personas que compiten por el ancho de banda en el mismo hogar</div>
+      <div class="cw" style="height:180px"><canvas id="cPersInternet"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- CURSADA VIRTUAL -->
+<section id="cursada" class="sec">
+  <div class="insight">
+    <strong>📚 Evaluación de la cursada virtual:</strong> El 48.5% la calificó Buena o Muy Buena, el 34.7% Regular y el 16.8% Mala o Muy Mala. La dimensión mejor valorada fue la <strong>evaluación del aprendizaje</strong> aunque con importantes diferencias. El <strong>53.8% sugiere mejorar el equipamiento</strong> disponible y el 50.2% pide mejores horarios como principales cambios para potenciar la virtualidad.
+  </div>
+  <div class="cg cg2">
+    <div class="cc">
+      <div class="ct">Evaluación General de la Cursada Virtual</div>
+      <div class="cs">Valoración global de la experiencia de cursada durante la pandemia</div>
+      <div class="cw" style="height:240px"><canvas id="cEvalGen2"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Evaluación del Aprendizaje</div>
+      <div class="cs">¿Cómo evaluás el aprendizaje logrado en la cursada virtual?</div>
+      <div class="cw" style="height:240px"><canvas id="cEvalAprend"></canvas></div>
+    </div>
+  </div>
+
+  <div class="cg cg1">
+    <div class="cc">
+      <div class="ct">Mejoras Sugeridas para Potenciar la Virtualidad</div>
+      <div class="cs">Aspectos que los estudiantes señalan como prioritarios para mejorar</div>
+      <div id="mejorasBars" style="padding:8px 0">
+        <div class="pbar"><span class="pbar-label">🖥 Equipamiento</span><div class="pbar-track"><div class="pbar-fill" style="width:53.8%;background:#1a5fa8">53.8%</div></div><span class="pbar-pct">5.550</span></div>
+        <div class="pbar"><span class="pbar-label">⏰ Horarios</span><div class="pbar-track"><div class="pbar-fill" style="width:50.2%;background:#0e9e8a">50.2%</div></div><span class="pbar-pct">5.179</span></div>
+        <div class="pbar"><span class="pbar-label">📖 Materiales</span><div class="pbar-track"><div class="pbar-fill" style="width:45.3%;background:#e8a220">45.3%</div></div><span class="pbar-pct">4.675</span></div>
+        <div class="pbar"><span class="pbar-label">📝 Evaluaciones</span><div class="pbar-track"><div class="pbar-fill" style="width:40%;background:#6b3fa0">40.0%</div></div><span class="pbar-pct">4.122</span></div>
+        <div class="pbar"><span class="pbar-label">👨‍🏫 Cap. docentes</span><div class="pbar-track"><div class="pbar-fill" style="width:38.9%;background:#d94f4f">38.9%</div></div><span class="pbar-pct">4.012</span></div>
+        <div class="pbar"><span class="pbar-label">📶 Conectividad</span><div class="pbar-track"><div class="pbar-fill" style="width:32.4%;background:#2a9d4e">32.4%</div></div><span class="pbar-pct">3.343</span></div>
+        <div class="pbar"><span class="pbar-label">💬 Otro</span><div class="pbar-track"><div class="pbar-fill" style="width:28.3%;background:#888">28.3%</div></div><span class="pbar-pct">2.914</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIFICULTADES -->
+<section id="dificultades" class="sec">
+  <div class="insight">
+    <strong>⚠️ Principal dificultad: la conexión.</strong> El 36.8% reportó dificultad Moderada o mayor con la <strong>conexión a internet</strong>. La <strong>gestión del tiempo</strong> fue la dificultad más intensa (32.3% reportó Mucha o Muchísima). El <strong>espacio físico</strong> también resultó problemático para el 28.3%. El 51.5% convive con conflictos por el acceso a computadoras en el hogar.
+  </div>
+  <div class="cg cg1">
+    <div class="cc">
+      <div class="ct">Nivel de Dificultad Encontrada en la Cursada Virtual</div>
+      <div class="cs">Distribución de respuestas por dimensión de dificultad</div>
+      <div class="cw" style="height:320px"><canvas id="cDificultades"></canvas></div>
+    </div>
+  </div>
+
+  <div class="cg cg2">
+    <div class="cc">
+      <div class="ct">Sentimientos durante la Cursada</div>
+      <div class="cs">Valoración de aspectos emocionales y personales</div>
+      <div class="scale-grid">
+        <div class="scale-item">
+          <div class="scale-title">🔌 Dificultad Conexión</div>
+          <div class="scale-bars">
+            <div class="sbar"><span class="sbar-l">Ninguna</span><div class="sbar-t"><div class="sbar-f" style="width:8.4%;background:#2a9d4e"></div></div><span class="sbar-n">8.4%</span></div>
+            <div class="sbar"><span class="sbar-l">Poca</span><div class="sbar-t"><div class="sbar-f" style="width:24.7%;background:#0e9e8a"></div></div><span class="sbar-n">24.7%</span></div>
+            <div class="sbar"><span class="sbar-l">Moderada</span><div class="sbar-t"><div class="sbar-f" style="width:42.3%;background:#e8a220"></div></div><span class="sbar-n">42.3%</span></div>
+            <div class="sbar"><span class="sbar-l">Mucha</span><div class="sbar-t"><div class="sbar-f" style="width:13%;background:#d94f4f"></div></div><span class="sbar-n">13%</span></div>
+            <div class="sbar"><span class="sbar-l">Muchísima</span><div class="sbar-t"><div class="sbar-f" style="width:3.7%;background:#900"></div></div><span class="sbar-n">3.7%</span></div>
+          </div>
+        </div>
+        <div class="scale-item">
+          <div class="scale-title">⏱️ Gestión del Tiempo</div>
+          <div class="scale-bars">
+            <div class="sbar"><span class="sbar-l">Ninguna</span><div class="sbar-t"><div class="sbar-f" style="width:8.6%;background:#2a9d4e"></div></div><span class="sbar-n">8.6%</span></div>
+            <div class="sbar"><span class="sbar-l">Poca</span><div class="sbar-t"><div class="sbar-f" style="width:22.2%;background:#0e9e8a"></div></div><span class="sbar-n">22.2%</span></div>
+            <div class="sbar"><span class="sbar-l">Moderada</span><div class="sbar-t"><div class="sbar-f" style="width:31.6%;background:#e8a220"></div></div><span class="sbar-n">31.6%</span></div>
+            <div class="sbar"><span class="sbar-l">Mucha</span><div class="sbar-t"><div class="sbar-f" style="width:19.9%;background:#d94f4f"></div></div><span class="sbar-n">19.9%</span></div>
+            <div class="sbar"><span class="sbar-l">Muchísima</span><div class="sbar-t"><div class="sbar-f" style="width:12.3%;background:#900"></div></div><span class="sbar-n">12.3%</span></div>
+          </div>
+        </div>
+        <div class="scale-item">
+          <div class="scale-title">🏠 Espacio Físico</div>
+          <div class="scale-bars">
+            <div class="sbar"><span class="sbar-l">Ninguna</span><div class="sbar-t"><div class="sbar-f" style="width:9%;background:#2a9d4e"></div></div><span class="sbar-n">9%</span></div>
+            <div class="sbar"><span class="sbar-l">Poca</span><div class="sbar-t"><div class="sbar-f" style="width:22%;background:#0e9e8a"></div></div><span class="sbar-n">22%</span></div>
+            <div class="sbar"><span class="sbar-l">Moderada</span><div class="sbar-t"><div class="sbar-f" style="width:34.7%;background:#e8a220"></div></div><span class="sbar-n">34.7%</span></div>
+            <div class="sbar"><span class="sbar-l">Mucha</span><div class="sbar-t"><div class="sbar-f" style="width:20%;background:#d94f4f"></div></div><span class="sbar-n">20%</span></div>
+            <div class="sbar"><span class="sbar-l">Muchísima</span><div class="sbar-t"><div class="sbar-f" style="width:8.3%;background:#900"></div></div><span class="sbar-n">8.3%</span></div>
+          </div>
+        </div>
+        <div class="scale-item">
+          <div class="scale-title">😔 Motivación</div>
+          <div class="scale-bars">
+            <div class="sbar"><span class="sbar-l">Ninguna</span><div class="sbar-t"><div class="sbar-f" style="width:24.7%;background:#2a9d4e"></div></div><span class="sbar-n">24.7%</span></div>
+            <div class="sbar"><span class="sbar-l">Poca</span><div class="sbar-t"><div class="sbar-f" style="width:24%;background:#0e9e8a"></div></div><span class="sbar-n">24%</span></div>
+            <div class="sbar"><span class="sbar-l">Moderada</span><div class="sbar-t"><div class="sbar-f" style="width:28.4%;background:#e8a220"></div></div><span class="sbar-n">28.4%</span></div>
+            <div class="sbar"><span class="sbar-l">Mucha</span><div class="sbar-t"><div class="sbar-f" style="width:11.5%;background:#d94f4f"></div></div><span class="sbar-n">11.5%</span></div>
+            <div class="sbar"><span class="sbar-l">Muchísima</span><div class="sbar-t"><div class="sbar-f" style="width:5.1%;background:#900"></div></div><span class="sbar-n">5.1%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="cc">
+      <div class="ct">Conflictos por Dispositivos en el Hogar</div>
+      <div class="cs">¿Hubo conflictos durante la cuarentena por el uso de computadoras?</div>
+      <div class="cw" style="height:260px"><canvas id="cConflictos2"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- FUTURO -->
+<section id="futuro" class="sec">
+  <div class="insight">
+    <strong>🔮 La mayoría prefiere la bimodalidad.</strong> El <strong>63.5% prefiere la modalidad bimodal</strong> al finalizar la pandemia. De ellos, el 55.2% optaría por <strong>un encuentro presencial por semana</strong> y el resto virtual. Solo el 7.1% preferiría una modalidad completamente virtual. El 51.5% cree que habrá <strong>medidas de distancia social</strong> al volver a las aulas.
+  </div>
+  <div class="cg cg2">
+    <div class="cc">
+      <div class="ct">Modalidad Preferida Post Pandemia</div>
+      <div class="cs">¿Cuándo termine el aislamiento, cómo preferirías cursar?</div>
+      <div class="cw" style="height:240px"><canvas id="cModalidad"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Mejor Combinación de Virtualidad y Presencialidad</div>
+      <div class="cs">¿Cuál te parece la mejor combinación de clases virtuales y presenciales?</div>
+      <div class="cw" style="height:240px"><canvas id="cCombinacion"></canvas></div>
+    </div>
+  </div>
+
+  <div class="cg cg1">
+    <div class="cc">
+      <div class="ct">¿Volverías a Cursar Materias Virtuales?</div>
+      <div class="cs">Disposición para continuar con la modalidad virtual una vez finalizada la pandemia</div>
+      <div class="cw" style="height:200px"><canvas id="cVolverVirtual"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTITUCIONAL -->
+<section id="institucional" class="sec">
+  <div class="insight">
+    <strong>🏛️ Alta valoración de la gestión institucional.</strong> El <strong>74.8% calificó positivamente la gestión de la UNSL</strong> durante la pandemia, con solo el 9% de evaluaciones negativas. El 16.2% respondió "No sabe". En cuanto al desempeño académico, la distribución de horas de dedicación semanal muestra una concentración en las <strong>3 a 5 horas diarias</strong>.
+  </div>
+  <div class="cg cg2">
+    <div class="cc">
+      <div class="ct">Evaluación de la Gestión Institucional UNSL</div>
+      <div class="cs">¿Cómo evaluarías la gestión de la UNSL durante la pandemia?</div>
+      <div class="cw" style="height:240px"><canvas id="cGestion"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Horas de Dedicación Semanal al Estudio</div>
+      <div class="cs">¿Cuántas horas semanales le dedicás al estudio en la virtualidad?</div>
+      <div class="cw" style="height:240px"><canvas id="cHoras"></canvas></div>
+    </div>
+  </div>
+
+  <div class="cg cg2">
+    <div class="cc">
+      <div class="ct">Residencia durante la Pandemia</div>
+      <div class="cs">Ubicación geográfica de los estudiantes al momento del censo</div>
+      <div class="cw" style="height:200px"><canvas id="cResidencia"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Situación Laboral</div>
+      <div class="cs">¿Trabajás actualmente?</div>
+      <div class="cw" style="height:200px"><canvas id="cTrabaja2"></canvas></div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer>UNSL · Censo Estudiantil 19/10/2020 · Virtualidad y Pandemia COVID-19 · <strong>10.314 respuestas</strong></footer>
+
+<script>
+const P=['#1a5fa8','#0e9e8a','#e8a220','#d94f4f','#6b3fa0','#2a9d4e','#e8509a','#c45f2e','#4a8cc4'];
+const SCALE_COLORS={'Muy Buena':'#2a9d4e','Muy Bueno':'#2a9d4e','Buena':'#0e9e8a','Bueno':'#0e9e8a','Regular':'#e8a220','Mala':'#d94f4f','Malo':'#d94f4f','Muy Mala':'#900','Muy Malo':'#900','No sabe / No contesta':'#ccc','No Sabe / No Contesta':'#ccc','No sabe/ No contesta':'#ccc'};
+
+function showTab(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>{if(t.getAttribute('onclick').includes("'"+id+"'"))t.classList.add('active');});
+}
+const o=(extra={})=>({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},...extra});
+
+function evalChart(id, data, labels){
+  const colors = labels.map(l=>SCALE_COLORS[l]||'#aaa');
+  new Chart(document.getElementById(id),{type:'bar',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:5,borderSkipped:false}]},
+    options:{...o(),scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},
+      y:{grid:{color:'#f0f2f7'},ticks:{font:{family:'DM Sans'}}}}}
+  });
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  // RESUMEN
+  evalChart('cEvalGeneral',[1027,4076,3585,668,192,766],['Muy Buena','Buena','Regular','Mala','Muy Mala','NS/NC']);
+  new Chart(document.getElementById('cConvivencia'),{type:'doughnut',
+    data:{labels:['Con familia','Con pareja/hijos','Solo/a','Con amigos','Otro'],
+      datasets:[{data:[6888,1928,1096,421,100],backgroundColor:P,borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:10},padding:8,boxWidth:10}}}}
+  });
+  new Chart(document.getElementById('cDispositivos'),{type:'bar',
+    data:{labels:['Celular','Notebook','Netbook','PC','Tablet'],
+      datasets:[{data:[76.7,45.1,28.6,20.3,2.7],backgroundColor:P,borderRadius:5}]},
+    options:{...o(),scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:11}}},
+      y:{grid:{color:'#f0f2f7'},ticks:{font:{family:'DM Sans'},callback:v=>v+'%'},max:90}}}
+  });
+  new Chart(document.getElementById('cTrabaja'),{type:'doughnut',
+    data:{labels:['No trabaja','Trabaja'],datasets:[{data:[6994,3320],backgroundColor:['#1a5fa8','#0e9e8a'],borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans'},padding:12}}}}
+  });
+
+  // INFRAESTRUCTURA
+  new Chart(document.getElementById('cInternet'),{type:'doughnut',
+    data:{labels:['Proveedor DSL/fibra','WiFi vecino','Datos móviles','Sin internet'],
+      datasets:[{data:[7133,3222,2464,98],backgroundColor:['#1a5fa8','#0e9e8a','#e8a220','#d94f4f'],borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:10},padding:8,boxWidth:10}}}}
+  });
+  new Chart(document.getElementById('cCompus'),{type:'bar',
+    data:{labels:['0','1','2','3','4','5+'],
+      datasets:[{data:[661,5427,2903,883,314,126],
+        backgroundColor:['#d94f4f','#1a5fa8','#0e9e8a','#e8a220','#6b3fa0','#888'],borderRadius:4}]},
+    options:{...o(),scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans'}}},y:{grid:{color:'#f0f2f7'},ticks:{font:{family:'DM Sans'}}}}}
+  });
+  new Chart(document.getElementById('cConflictos'),{type:'doughnut',
+    data:{labels:['Sin conflictos','Por PCs escasas','Otros motivos','Algunas PCs mejores'],
+      datasets:[{data:[5006,2730,1797,781],backgroundColor:['#2a9d4e','#d94f4f','#e8a220','#6b3fa0'],borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:10},padding:8,boxWidth:10}}}}
+  });
+  new Chart(document.getElementById('cPersInternet'),{type:'bar',
+    data:{labels:['0','1','2','3','4','5','6','7+'],
+      datasets:[{data:[400,2382,3523,2308,1136,389,106,70],
+        backgroundColor:['#2a9d4e','#0e9e8a','#1a5fa8','#e8a220','#d94f4f','#6b3fa0','#900','#555'],borderRadius:4}]},
+    options:{...o(),scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans'}}},
+      y:{grid:{color:'#f0f2f7'},ticks:{font:{family:'DM Sans'}}}}}
+  });
+
+  // CURSADA
+  evalChart('cEvalGen2',[1027,4076,3585,668,192,766],['Muy Buena','Buena','Regular','Mala','Muy Mala','NS/NC']);
+  evalChart('cEvalAprend',[1310,3664,3641,653,258,788],['Muy Bueno','Bueno','Regular','Malo','Muy Malo','NS/NC']);
+
+  // DIFICULTADES
+  new Chart(document.getElementById('cDificultades'),{type:'bar',
+    data:{
+      labels:['Tecnología','Conexión','Espacio','Tiempo','Motivación','Conflicto familiar'],
+      datasets:[
+        {label:'Ninguna',data:[8.8,8.4,9.0,8.6,24.7,27.9],backgroundColor:'#2a9d4e',borderRadius:2},
+        {label:'Poca',data:[35.9,24.7,22.0,22.2,24.0,21.1],backgroundColor:'#0e9e8a',borderRadius:2},
+        {label:'Moderada',data:[36.9,42.3,34.7,31.6,28.4,24.7],backgroundColor:'#e8a220',borderRadius:2},
+        {label:'Mucha',data:[9.0,13.0,20.0,19.9,11.5,13.6],backgroundColor:'#d94f4f',borderRadius:2},
+        {label:'Muchísima',data:[3.2,3.7,8.3,12.3,5.1,7.0],backgroundColor:'#900',borderRadius:2},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},boxWidth:12}}},
+      scales:{
+        x:{stacked:true,grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},
+        y:{stacked:true,grid:{color:'#f0f2f7'},ticks:{font:{family:'DM Sans'},callback:v=>v+'%'},max:100}
+      }}
+  });
+  new Chart(document.getElementById('cConflictos2'),{type:'doughnut',
+    data:{labels:['Sin conflictos','PCs escasas','Otros motivos','Calidad desigual'],
+      datasets:[{data:[5006,2730,1797,781],backgroundColor:['#2a9d4e','#d94f4f','#e8a220','#6b3fa0'],borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
+      plugins:{legend:{position:'right',labels:{font:{family:'DM Sans',size:11},padding:10,boxWidth:12}}}}
+  });
+
+  // FUTURO
+  new Chart(document.getElementById('cModalidad'),{type:'doughnut',
+    data:{labels:['Bimodal','Completamente presencial','Completamente virtual'],
+      datasets:[{data:[6547,2982,730],backgroundColor:['#1a5fa8','#0e9e8a','#6b3fa0'],borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:10,boxWidth:12}}}}
+  });
+  new Chart(document.getElementById('cCombinacion'),{type:'bar',
+    data:{labels:['1 vez/semana\npresencial','Sin preferencia','Cada 15 días\npresencial','Cada 30 días\npresencial'],
+      datasets:[{data:[5691,2415,1737,469],backgroundColor:['#1a5fa8','#888','#0e9e8a','#e8a220'],borderRadius:5}]},
+    options:{...o(),scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},
+      y:{grid:{color:'#f0f2f7'},ticks:{font:{family:'DM Sans'}}}}}
+  });
+  new Chart(document.getElementById('cVolverVirtual'),{type:'bar',
+    data:{labels:['Moderada','Poca','Mucha','Ninguna','Muchísima','NS/NC'],
+      datasets:[{data:[2982,1997,1753,1628,1320,634],
+        backgroundColor:['#e8a220','#0e9e8a','#1a5fa8','#d94f4f','#2a9d4e','#aaa'],borderRadius:4}]},
+    options:{...o(),scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},
+      y:{grid:{color:'#f0f2f7'},ticks:{font:{family:'DM Sans'}}}}}
+  });
+
+  // INSTITUCIONAL
+  new Chart(document.getElementById('cGestion'),{type:'doughnut',
+    data:{labels:['Positiva','No sabe','Negativa'],
+      datasets:[{data:[7716,1668,929],backgroundColor:['#2a9d4e','#aaa','#d94f4f'],borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans'},padding:14}}}}
+  });
+  new Chart(document.getElementById('cHoras'),{type:'bar',
+    data:{labels:['0','1','2','3','4','5','6','7','8','9','10+'],
+      datasets:[{data:[1084,876,1210,1461,1684,1099,923,713,751,258,249],
+        backgroundColor:'#1a5fa8',borderRadius:4}]},
+    options:{...o(),scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans'}}},
+      y:{grid:{color:'#f0f2f7'},ticks:{font:{family:'DM Sans'}}}}}
+  });
+  new Chart(document.getElementById('cResidencia'),{type:'doughnut',
+    data:{labels:['Reside en SL','No reside en SL'],datasets:[{data:[9080,1234],backgroundColor:['#1a5fa8','#d94f4f'],borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans'},padding:14}}}}
+  });
+  new Chart(document.getElementById('cTrabaja2'),{type:'doughnut',
+    data:{labels:['No trabaja','Trabaja'],datasets:[{data:[6994,3320],backgroundColor:['#0e9e8a','#e8a220'],borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans'},padding:14}}}}
+  });
+});
+</script>
+</body>
+</html>
