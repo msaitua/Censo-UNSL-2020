@@ -121,13 +121,6 @@ censo2020-unsl/
 
 ## 🚀 Cómo Ver el Dashboard
 
-```bash
-git clone https://github.com/msaitua/censo2020-unsl.git
-open censo2020-unsl/visualizaciones/dashboard.html
-```
-
-O en línea (una vez habilitado GitHub Pages):
-```
 https://msaitua.github.io/censo2020-unsl/visualizaciones/dashboard.html
 ```
 
