@@ -229,14 +229,20 @@ Visualización
 Aprendizaje
 Portfolio profesional
 
+---
 ## 👨‍💻 Autor
-Mariano Saitua
 
-Desarrollador de Software · Data Analytics · Business Intelligence
+### Mariano Saitua
 
-🔗 LinkedIn
+**Desarrollador de Software · Data Analytics · Business Intelligence**
 
-🔗 GitHub
+📌 **LinkedIn:**
+https://www.linkedin.com/in/msaitua
+
+💻 **GitHub:**
+https://github.com/msaitua
+
+---
 
 ## 📚 Fuente
 
